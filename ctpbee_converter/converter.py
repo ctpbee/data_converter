@@ -12,9 +12,14 @@ class Converter:
         app.tools['converter'] = self
 
     @property
-    def positions_dataframe(self):
+    def positions_df(self):
         """ 以dataframe的形式返回持仓信息 """
         return covert_positionholding(self.app.recorder.position_manager.values())
 
     def get_positions_cross_dataframe(self):
         pass
+
+
+if __name__ == '__main__':
+    converter  = Converter()
+    converter.positions_df
