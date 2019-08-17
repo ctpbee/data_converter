@@ -18,7 +18,7 @@ pip install ctpbee_converter
 ## 简单使用 推荐使用工厂模式 
 
 ##### ext.py  中间文件
-```
+```python
 from ctpbee_converter import Converter
 converter = Converter()
 ```
@@ -35,7 +35,7 @@ class Strategy(CtpbeeApi):
 
 ```
 #####  app.py
-```
+```python
 from ctpbee import CtpBee
 from ext import converter
 from strategy import Strategy
@@ -50,7 +50,7 @@ def create_app():
 ```
 
 #### manager.py
-```
+```python
 from app import create_app 
 app = create_app()
 app.start()
