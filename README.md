@@ -20,7 +20,7 @@ pip install ctpbee_converter
 
 ```
 from ctpbee import CtpBee
-from ctpbee_converter import DataConverter
+from ctpbee_converter import Converter
 
 app = Ctpbee("ctpbee", __name__)
 app.recorder.from_mapping(info)
