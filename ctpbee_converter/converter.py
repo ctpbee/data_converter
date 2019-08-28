@@ -1,47 +1,69 @@
 from collections import defaultdict
 
-from ctpbee_converter.helper import covert_positionholding, remove_digit
+from ctpbee_converter.helper import convert_ld, convert_lo, convert_d_to_df
 
 
 class Converter:
     def __init__(self, app=None):
+        self.app = None
         if app is not None:
             app.tools['converter'] = self
             self.app = app
+
         self.main_contract_list = []
         self.main_mapping = {}
         self.contracts = defaultdict(list)
-        self.cal_main()
-
-    def cal_main(self):
-        """ 计算主力合约  可以被主动调用 """
-        for contract in self.app.recorder.get_all_contracts():
-            self.contracts[remove_digit(contract.symbol)].append(contract)
-        for x, v in self.contracts.items():
-            # 根据成交量 来进行计算主力合约
-            vol_contract = sorted(v, key=lambda x: x.min_volume, reverse=True)[0]
-            self.main_mapping[x.upper()] = vol_contract
-            self.main_contract_list.append(vol_contract.local_symbol)
 
     def init_app(self, app):
-        if app is None:
+        if self.app is None and app is not None:
             self.app = app
             app.tools['converter'] = self
 
     @property
     def positions_df(self):
         """ 以dataframe的形式返回持仓信息 """
-        return covert_positionholding(self.app.recorder.position_manager.values())
+        return convert_ld(self.app.recorder.position_manager.get_all_positions())
 
     @property
-    def main_contracts(self) -> list:
-        """ 所有主力合约数据 [local_symbol, local_symbol... ] """
-        return self.main_contract_list
+    def position_dict(self):
+        """ 以字典的形式返回持仓信息 """
+        return
 
-    def get_main_contract_by_code(self, code: str) -> object:
-        """
-            通过英文code来获取相应的主力合约数据
-            假定输入 ap 返回 --- > ContractData(local_symbol=ap1910)
+    @property
+    def position_list(self):
+        """ 以列表形式返回持仓信息 """
+        return self.app.recorder.position_manager.get_all_positions()
 
-        """
-        return self.main_mapping.get(code.upper())
+    @property
+    def contract_df(self):
+        """ 返回合约信息 """
+        return convert_lo(self.app.recorder.get_all_contracts(), index="local_symbol")
+
+    @property
+    def active_orders_df(self):
+        """ 返回活跃的订单 """
+        return convert_lo(self.app.recorder.get_all_active_orders())
+
+    @property
+    def all_orders_df(self):
+        """ 所有单 """
+        return convert_lo(self.app.recorder.get_all_orders())
+
+    @property
+    def trade_df(self):
+        """ 所有成交单 """
+        return convert_lo(self.app.recorder.get_all_trades())
+
+    @property
+    def account_df(self):
+        """ 以dataframe的形式返回账户信息 """
+        return convert_d_to_df(self.app.recorder.get_account()._to_dict())
+
+    @property
+    def account_dict(self):
+        """ 以字典的形式返回账户信息 """
+        return self.app.recorder.get_account()._to_dict()
+
+    def get_avtive_orders_df_by_code(self, local_symbol):
+        """ 根据local_symbol拿到活跃订单 """
+        return
